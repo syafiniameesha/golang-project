@@ -1,0 +1,7 @@
+change the database connection according to your configuration.
+
+changes can be made inside database/db.go. update the dsn to match your setup.
+dsn := "root:123456@tcp(127.0.0.1:3306)/userManagement?parseTime=true" // MySQL credentials and database name
+
+format for dsn is:
+dsn := "username:password@protocol(hostname:port)/dbname?parseTime=true"
