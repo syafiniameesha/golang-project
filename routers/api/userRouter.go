@@ -13,6 +13,7 @@ func SetupUserRouter(router *gin.RouterGroup, db *gorm.DB) {
     // Add other user routes here
     router.POST("/users", userController.CreateUser)
     router.PUT("/users/:id", userController.UpdateUser)
+    router.POST("/userDetails", userController.GetUserDetailsByToken)
 }
 
 

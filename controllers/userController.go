@@ -4,7 +4,7 @@ import (
     "net/http"
     "strconv"
     "user-management/models"
-
+    "user-management/utils"
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
 )
@@ -83,5 +83,57 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
         return
     }
 
+    c.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+// GetUserDetails handles the request to get user details based on token
+func (uc *UserController) GetUserDetails(c *gin.Context) {
+    var requestBody struct {
+        Token string `json:"token"`
+    }
+
+    if err := c.ShouldBindJSON(&requestBody); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+        return
+    }
+
+    // Validate the token and get the user ID
+    userID, err := utils.ValidateToken(requestBody.Token)
+    if err != nil {
+        c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+        return
+    }
+
+    // Find the user in the database
+    var user models.User
+    if err := uc.DB.Where("id = ?", userID).First(&user).Error; err != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        return
+    }
+
+    // Return user details
+    c.JSON(http.StatusOK, gin.H{"data": user})
+}
+
+// GetUserDetailsByToken handles the request to get user details by token
+func (uc *UserController) GetUserDetailsByToken(c *gin.Context) {
+    var requestBody struct {
+        Token string `json:"token"`
+    }
+
+    if err := c.ShouldBindJSON(&requestBody); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+        return
+    }
+
+    // Find the user in the database by token
+    var user models.User
+    result := uc.DB.Where("token = ?", requestBody.Token).First(&user)
+    if result.Error != nil {
+        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        return
+    }
+
+    // Return user details
     c.JSON(http.StatusOK, gin.H{"data": user})
 }
