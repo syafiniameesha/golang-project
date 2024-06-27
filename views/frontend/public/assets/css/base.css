@@ -1,0 +1,22 @@
+:root {
+    --font_default: 'Noto Sans', sans-serif;;
+    --color_text_default: rgba(19, 47, 81, 1);
+    --color_text_default_rgb: 19, 47, 81;
+    --color_alert_default: rgba(255,217,61,1);
+    --color_alert_default_rgb: 255, 217, 61;
+    --color_primary_default: rgba(60, 103, 138, 1);
+    --color_primary_default_rgb: 60, 103, 138;
+    --color_success_default: rgba(77,221,178,1);
+    --color_success_default_rgb: 77, 221, 178;
+    --color_surface_default: rgba(255, 255, 255, 1);
+    --color_surface_default_rgb: 255, 255, 255;
+    --color_background_default: rgba(250, 250, 250, 1);
+    --color_background_default_rgb: 250, 250, 250;
+    --color_destructive_default: rgba(242,92,90,1);
+    --color_destructive_default_rgb: 242, 92, 90;
+    --color_primary_contrast_default: rgba(61,190,199,1);
+    --color_primary_contrast_default_rgb: 61, 190, 199;
+}
+li{
+    list-style: none;
+}
