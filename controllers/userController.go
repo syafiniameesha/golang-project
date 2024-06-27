@@ -3,8 +3,10 @@ package controllers
 import (
     "net/http"
     "strconv"
+    "errors"
     "user-management/models"
-    "user-management/utils"
+    "user-management/helpers"
+
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
 )
@@ -86,54 +88,34 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"data": user})
 }
 
-// GetUserDetails handles the request to get user details based on token
+// GetUserDetails fetches user details based on token
 func (uc *UserController) GetUserDetails(c *gin.Context) {
-    var requestBody struct {
-        Token string `json:"token"`
-    }
-
-    if err := c.ShouldBindJSON(&requestBody); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-        return
-    }
-
-    // Validate the token and get the user ID
-    userID, err := utils.ValidateToken(requestBody.Token)
+    userID, err := getUserIdFromToken(c)
     if err != nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
         return
     }
 
-    // Find the user in the database
+    // Fetch user from DB
     var user models.User
     if err := uc.DB.Where("id = ?", userID).First(&user).Error; err != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
         return
     }
 
-    // Return user details
-    c.JSON(http.StatusOK, gin.H{"data": user})
+    c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
-// GetUserDetailsByToken handles the request to get user details by token
-func (uc *UserController) GetUserDetailsByToken(c *gin.Context) {
-    var requestBody struct {
-        Token string `json:"token"`
+func getUserIdFromToken(c *gin.Context) (uint, error) {
+    tokenString := c.GetHeader("Authorization")
+    if tokenString == "" {
+        return 0, errors.New("Authorization header is required")
     }
 
-    if err := c.ShouldBindJSON(&requestBody); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-        return
+    token, err := helpers.VerifyToken(tokenString)
+    if err != nil {
+        return 0, err
     }
 
-    // Find the user in the database by token
-    var user models.User
-    result := uc.DB.Where("token = ?", requestBody.Token).First(&user)
-    if result.Error != nil {
-        c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-        return
-    }
-
-    // Return user details
-    c.JSON(http.StatusOK, gin.H{"data": user})
+    return token.UserID, nil
 }

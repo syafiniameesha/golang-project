@@ -111,38 +111,30 @@ func (ac *AuthController) Login(c *gin.Context) {
         return
     }
 
-    // Find user by email
     var user models.User
     if err := ac.DB.Where("email = ?", input.Email).First(&user).Error; err != nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
         return
     }
 
-    // Compare hashed password
     if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
         c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
         return
     }
 
-    // Generate JWT access token
-    accessToken, err := helpers.GenerateAccessToken(user.ID)
+    token, err := helpers.GenerateAccessToken(user.ID)
     if err != nil {
         c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
         return
     }
 
-    // Update user's access token in database (optional, depends on your application logic)
-    user.Token = accessToken
-    if err := ac.DB.Save(&user).Error; err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
-        return
-    }
-
-    c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": accessToken})
+    c.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token, "user": user})
 }
 
 func (ac *AuthController) ForgotPassword(c *gin.Context) {
     var input ForgotPasswordInput
+    log.Printf("current time" + time.Now().String())
+    log.Printf("current time 1" + time.Now().Add((time.Hour)).String())
     if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -164,7 +156,9 @@ func (ac *AuthController) ForgotPassword(c *gin.Context) {
 
     // Set password reset token and expiry in user record
     user.PasswordResetToken = resetToken
-    expiresAt := time.Now().Add(time.Hour)
+    expiresAt := time.Now().Add(9 * time.Hour)
+    log.Printf("Current time 3: %s", expiresAt.Format("2006-01-02 15:04:05"))
+
     user.PasswordResetExpiresAt = &expiresAt 
 
     if err := ac.DB.Save(&user).Error; err != nil {
@@ -173,7 +167,7 @@ func (ac *AuthController) ForgotPassword(c *gin.Context) {
     }
 
     // Send password reset email to user
-    resetLink := "http://example.com/reset-password?token=" + resetToken
+    resetLink := "http://localhost:5173/resetPassword?token=" + resetToken
     emailBody := "Here is the link to reset your password: <a href=\"" + resetLink + "\">Reset Password</a>"
     if err := helpers.SendEmail(user.Email, "Password Reset", emailBody); err != nil {
         log.Printf("Failed to send email to %s: %v", user.Email, err)

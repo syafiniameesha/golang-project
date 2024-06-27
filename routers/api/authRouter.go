@@ -2,7 +2,6 @@ package api
 
 import (
     "user-management/controllers"
-
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
 )

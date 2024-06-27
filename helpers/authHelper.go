@@ -7,22 +7,22 @@ import (
     "gopkg.in/gomail.v2"
 )
 
-var jwtSecret = []byte("your_jwt_secret_key")
-var passwordResetSecret = []byte("your_password_reset_secret_key")
+var jwtSecret = []byte("123456")
+var passwordResetSecret = []byte("123456")
 
 type Claims struct {
-    UserID uint `json:"user_id"`
+    UserID uint `json:"ID"`
     jwt.StandardClaims
 }
 
-// GenerateAccessToken generates an access token with a specified expiration time.
+// GenerateAccessToken generates an access token 
 func GenerateAccessToken(userID uint) (string, error) {
     claims := &Claims{
         UserID: userID,
         StandardClaims: jwt.StandardClaims{
-            ExpiresAt: time.Now().Add(time.Hour * 2).Unix(), // Token expires in 2 hours
+            ExpiresAt: time.Now().Add(time.Hour * 1).Unix(), // Token expires in 1 hour
             IssuedAt:  time.Now().Unix(),
-            Issuer:    "your_application_name",
+            Issuer:    "User_Management",
             Subject:   "access_token",
         },
     }
@@ -34,14 +34,27 @@ func GenerateAccessToken(userID uint) (string, error) {
     return tokenString, nil
 }
 
-// GenerateRefreshToken generates a refresh token with a specified expiration time.
+// VerifyToken parses and verifies a JWT token.
+func VerifyToken(tokenString string) (*Claims, error) {
+    claims := &Claims{}
+    token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+        return jwtSecret, nil
+    })
+
+    if err != nil || !token.Valid {
+        return nil, err
+    }
+    return claims, nil
+}
+
+// GenerateRefreshToken generates a refresh token  
 func GenerateRefreshToken(userID uint) (string, error) {
     claims := &Claims{
         UserID: userID,
         StandardClaims: jwt.StandardClaims{
             ExpiresAt: time.Now().AddDate(0, 0, 7).Unix(), // Refresh token expires in 7 days
             IssuedAt:  time.Now().Unix(),
-            Issuer:    "your_application_name",
+            Issuer:    "User_Management",
             Subject:   "refresh_token",
         },
     }
@@ -53,22 +66,25 @@ func GenerateRefreshToken(userID uint) (string, error) {
     return tokenString, nil
 }
 
+// generate token for reset password
 func GeneratePasswordResetToken(userID uint) (string, error) {
     claims := jwt.MapClaims{
         "sub": userID,
-        "exp": time.Now().Add(time.Hour).Unix(), // Example: Token expires in 1 hour
+        "exp": time.Now().Add(time.Hour).Unix(), // Token expires in 1 hour
         "iat": time.Now().Unix(),
     }
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
     return token.SignedString(passwordResetSecret)
 }
 
+// verify reset password token
 func VerifyPasswordResetToken(tokenString string) (*jwt.Token, error) {
     return jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         return passwordResetSecret, nil
     })
 }
 
+// SendEmail sends an email to the specified domain
 func SendEmail(to string, subject string, body string) error {
     from := "etesting053@gmail.com"
     password := "ruyonsnglowjqmpp" //use app password instead of login password
