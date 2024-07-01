@@ -6,7 +6,6 @@ import (
     "errors"
     "user-management/models"
     "user-management/helpers"
-
     "github.com/gin-gonic/gin"
     "gorm.io/gorm"
 )
@@ -118,4 +117,15 @@ func getUserIdFromToken(c *gin.Context) (uint, error) {
     }
 
     return token.UserID, nil
+}
+
+func (uc *UserController) GetUserList(c *gin.Context) {
+    var users []models.User
+
+    if err := uc.DB.Find(&users).Error; err != nil {
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve users"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"data": users})
 }

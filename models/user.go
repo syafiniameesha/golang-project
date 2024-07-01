@@ -5,6 +5,13 @@ import (
     "gorm.io/gorm"
 )
 
+type UserType string
+
+const (
+    Admin   UserType = "admin"
+    Regular UserType = "regular"
+)
+
 type User struct {
     gorm.Model
     ID                  uint  `json:"ID" gorm:"primary_key;auto_increment:true"`
@@ -16,4 +23,5 @@ type User struct {
     RefreshToken        string `json:"refresh_token"`
     PasswordResetToken  string `gorm:"default:null" json:"passwordResetToken"`
     PasswordResetExpiresAt *time.Time `gorm:"default:null" json:"passwordResetExpiresAt"`
+    Type                UserType `gorm:"type:ENUM('admin', 'regular');not null;" json:"type"`
 }

@@ -13,8 +13,9 @@ func SetupUserRouter(router *gin.RouterGroup, db *gorm.DB) {
     
     // Add other user routes here
     router.POST("/users", userController.CreateUser)
-    router.PUT("/users/:id", userController.UpdateUser)
+    router.PUT("/users/:id", middleware.AuthMiddleware(), userController.UpdateUser)
     router.GET("/userDetails", middleware.AuthMiddleware(), userController.GetUserDetails)
+    router.GET("/userList", middleware.AuthMiddleware(), userController.GetUserList)
     // router.POST("/userDetails", userController.GetUserDetailsByToken)
 }
 

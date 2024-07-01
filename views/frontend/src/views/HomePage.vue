@@ -9,9 +9,9 @@
           </el-col>
           <el-col :span="1">
             <div style="width: 24px; height: 24px;">
-              <div @click="changeMode('edit')" style="width: 16px; height: 16px;"><el-icon>
-                  <EditPen />
-                </el-icon></div>
+              <div @click="changeMode('edit')" style="width: 16px; height: 16px;">
+                <el-icon><EditPen /></el-icon>
+              </div>
             </div>
           </el-col>
         </el-row>
@@ -33,9 +33,9 @@
       <div v-if="mode === 'view'">
         <el-row>
           <div class="grp-center">
-            <div style="width: 40px; height: 40px;"><el-icon>
+            <div><el-icon>
                 <User />
-              </el-icon></div>
+            </el-icon></div>
           </div>
         </el-row>
         <el-row>
@@ -89,10 +89,10 @@
           </el-row>
           <el-row :gutter="10" style="width: 300px;">
             <el-col :span="12">
-              <el-input v-model="userDetails.firstname" class="font-12"/>
+              <el-input v-model="userDetailsInputField.firstname" class="font-12" />
             </el-col>
             <el-col :span="12">
-              <el-input v-model="userDetails.lastname" class="font-12"/>
+              <el-input v-model="userDetailsInputField.lastname" class="font-12" />
             </el-col>
           </el-row>
         </div>
@@ -122,8 +122,8 @@ export default {
   data() {
     return {
       mode: 'view',
-      editMode: false,
       userDetails: null,
+      userDetailsInputField: null,
       error: null
     };
   },
@@ -146,6 +146,7 @@ export default {
       })
         .then(response => {
           this.userDetails = response.data.user;
+          this.userDetailsInputField = { firstname: response.data.user.firstname, lastname: response.data.user.lastname };
 
           // save userID in local storage
           localStorage.setItem('currentUserID', response.data.user.ID);
@@ -155,11 +156,34 @@ export default {
           console.error('Error fetching user details:', error.response || error);
           this.error = 'Error fetching user details.';
           this.userDetails = null;
+          this.userDetails = null;
         });
     },
 
     changeMode(mode) {
       this.mode = mode;
+    },
+
+    updateProfileInformation() {
+      const token = Cookies.get('token');
+      console.log(token);
+      if (!token) {
+        this.$router.push('/');
+        return;
+      }
+
+      axios.put('http://localhost:8080/api/v1/users/${}', {
+        headers: {
+          Authorization: `${Cookies.get('token')}`
+        }
+      })
+        .then(response => {
+
+        })
+        .catch(error => {
+          console.error('Error fetching user details:', error.response || error);
+          this.error = 'Error fetching user details.';
+        });
     }
   }
 };

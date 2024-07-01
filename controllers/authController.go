@@ -68,6 +68,7 @@ func (ac *AuthController) Signup(c *gin.Context) {
         LastName:  input.LastName,
         Email:     input.Email,
         Password:  string(hashedPassword),
+        Type: models.UserType(models.Regular),
     }
 
     if err := ac.DB.Create(&newUser).Error; err != nil {

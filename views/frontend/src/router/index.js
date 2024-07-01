@@ -23,6 +23,11 @@ const routes = [
     component:() => import('/src/views/ResetPassword.vue'),
   },
   {
+    path: '/userManagement',
+    name: 'User Management',
+    component:() => import('/src/views/ResetPassword.vue'),
+  },
+  {
     path: '/project',
     name: 'Project',
     component:() => import('/src/views/Project/Project.vue'),
