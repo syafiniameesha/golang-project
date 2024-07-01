@@ -1,5 +1,9 @@
 <template>
   <div class="grp-container">
+    <!-- grp logo -->
+     <div class="grp-logo">
+      <img src="/public/logo.svg" alt=""/>
+     </div>
     <!-- signup -->
     <div class="grp-form" v-if="view === 'signup'">
       <div class="grp-row">
@@ -33,6 +37,14 @@
           <el-button class="button" @click="updateView('login')">Login</el-button>
         </el-form-item>
       </el-form>
+
+      <el-link type="primary"
+        class="grp-link"
+        style=""
+        @click="updateView('forgotPassword')"
+      >
+        Forgot Password
+      </el-link>
     </div>
 
     <!-- login -->
@@ -97,17 +109,12 @@
 import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ElForm, ElFormItem, ElInput, ElButton } from 'element-plus';
 import { notification} from "/src/utils/notification";
 import Cookies from 'js-cookie';
 
 export default {
   name: 'SignupForm',
   components: {
-    ElForm,
-    ElFormItem,
-    ElInput,
-    ElButton,
   },
   data() {
     return {
@@ -252,16 +259,26 @@ export default {
     }
 }
 
-.button{
-  border: 0;
-  color: var(--color_text_default);
-  background-color: #e9f0f0;
-  font-weight: bold;
-  font-size: 14px;
+.grp-logo {
+  float: left;
+  width: 35%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  &:hover {
-    background-color: #132F51;
-    color: #FFFFFF;
+  img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+  }
+
+  @media screen and (max-width: 830px) {
+    width: 100%;
+    height: 30%;
+    max-width: 100%; 
+    padding-left: 40px;
   }
 }
 

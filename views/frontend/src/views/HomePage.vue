@@ -16,39 +16,32 @@
         <div style="font-size: 14px;"><strong>Personal Details</strong></div>
       </el-row>
       <div v-if="userDetails">
-      <div class="content-wrapper">
-        <el-row>
-          <div class="content">
-            <el-row :gutter="10" style="width: 300px;">
-              <el-col :span="15"><label>Firstname</label></el-col>
-              <el-col :span="8"><label>Lastname</label></el-col>
-            </el-row>
-            <el-row :gutter="10" style="width: 300px;">
-              <el-col :span="15"><p class="font-12">{{ userDetails.firstname }}</p></el-col>
-              <el-col :span="8"><p class="font-12">{{ userDetails.lastname }}</p></el-col>
-            </el-row>
-          </div>
-        </el-row>
+        <div class="content-wrapper">
+          <el-row>
+            <div class="content">
+              <el-row :gutter="10" style="width: 300px;">
+                <el-col :span="15"><label>Firstname</label></el-col>
+                <el-col :span="8"><label>Lastname</label></el-col>
+              </el-row>
+              <el-row :gutter="10" style="width: 300px;">
+                <el-col :span="15"><p class="font-12">{{ userDetails.firstname }}</p></el-col>
+                <el-col :span="8"><p class="font-12">{{ userDetails.lastname }}</p></el-col>
+              </el-row>
+            </div>
+          </el-row>
 
-        <el-row>
-          <div class="content">
-            <el-row :gutter="10" style="width: 300px;">
-              <el-col :span="15"><label>Email</label></el-col>
-            </el-row>
-            <el-row :gutter="10" style="width: 300px;">
-              <el-col :span="15"><p class="font-12">{{ userDetails.email }}</p></el-col>
-            </el-row>
-          </div>
-        </el-row>
+          <el-row>
+            <div class="content">
+              <el-row :gutter="10" style="width: 300px;">
+                <el-col :span="15"><label>Email</label></el-col>
+              </el-row>
+              <el-row :gutter="10" style="width: 300px;">
+                <el-col :span="15"><p class="font-12">{{ userDetails.email }}</p></el-col>
+              </el-row>
+            </div>
+          </el-row>
+        </div>
       </div>
-    </div>
-      
-      
-      <!-- <div v-if="userDetails">
-        <p>First Name: {{ userDetails.firstname }}</p>
-        <p>Last Name: {{ userDetails.lastname }}</p>
-        <p>Email: {{ userDetails.email }}</p>
-      </div> -->
       
       <div v-else>
         <p>Loading user details...</p>
@@ -66,7 +59,6 @@
 <script>
   import axios from 'axios';
   import Sidebar from '/src/components/Sidebar.vue';
-  import { ElRow, ElCol } from 'element-plus';
   import { notification} from "/src/utils/notification";
   import Cookies from 'js-cookie';
 
@@ -74,8 +66,6 @@
     name: 'HomePage',
     components: {
       Sidebar,
-      ElRow,
-      ElCol 
     },
     data() {
       return {
@@ -103,6 +93,8 @@
         .then(response => {
           this.userDetails = response.data.user;
 
+          // save userID in local storage
+          localStorage.setItem('currentUserID', response.data.user.ID);
           this.error = null;
         })
         .catch(error => {

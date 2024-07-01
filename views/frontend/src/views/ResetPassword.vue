@@ -5,31 +5,22 @@
         <h2
           style="font-size: 16px; font-weight: bold; color: #132F51;"
         >
-          Sign Up
+          Reset Password
         </h2>
       </div>
 
-      <el-form ref="signupForm" :model="form" :rules="rules" label-position="top" style="width: 100%">
-        <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
-          <el-form-item label="First Name" prop="firstName" style="width: 45%;">
-            <el-input v-model="form.firstName" clearable></el-input>
-          </el-form-item>
-          <el-form-item label="Last Name" prop="lastName" style="width: 45%;">
-            <el-input v-model="form.lastName" clearable></el-input>
-          </el-form-item>
-        </div>
-            
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="form.email" clearable></el-input>
-        </el-form-item>
-
+      <el-form ref="resetForm" :model="form" :rules="rules" label-position="top" style="width: 100%">
         <el-form-item label="Password" prop="password">
           <el-input type="password" v-model="form.password"  show-password clearable></el-input>
         </el-form-item>
 
+        <el-form-item label="Confirm Password" prop="password">
+          <el-input type="password" v-model="form.confirmPassword"  show-password clearable></el-input>
+        </el-form-item>
+
         <el-form-item>
           <el-button type="primary" @click="submitForm">Reset</el-button>
-          <el-button class="button" @click="cancel">Back</el-button>
+          <el-button class="button" @click="cancel">Cancel</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -55,45 +46,41 @@ export default {
   data() {
     return {
       form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: ''
+        password: '',
+        confirmPassword: '',
       },
       rules: {
-        firstName: [
-          { required: true, message: 'Please enter your first name', trigger: 'blur' },
-        ],
-        lastName: [
-          { required: true, message: 'Please enter your last name', trigger: 'blur' },
-        ],
-        email: [
-          { required: true, message: 'Please enter your email', trigger: 'blur' },
-          { type: 'email', message: 'Please enter a valid email address', trigger: ['blur', 'change'] },
-        ],
         password: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
           { min: 6, message: 'Password length should be at least 6 characters', trigger: 'blur' },
         ],
-      },
-      loginForm: {
-        email: '',
-        password: ''
-      },
-      loginRules: {
-        email: [
-          { required: true, message: 'Please enter your email', trigger: 'blur' },
-          { type: 'email', message: 'Please enter a valid email address', trigger: ['blur', 'change'] },
-        ],
-        password: [
+        confirmPassword: [
           { required: true, message: 'Please enter your password', trigger: 'blur' },
+          { min: 6, message: 'Password length should be at least 6 characters', trigger: 'blur' },
         ],
-      }
+      },
     };
   },
   methods: {
     submitForm() {
-      
+      this.$refs.resetForm.validate((valid) => {
+        if (valid) {
+          const token = this.$route.query.token;
+          axios.post(`http://localhost:8080/api/v1/resetPassword/${token}`, {
+            password: this.form.password,
+            confirmPassword: this.form.confirmPassword,
+          })
+          .then(response => {
+            notification('Password Reset', 'Successfully Reset Your Password', 'bottom-left');
+            this.$router.push('/');
+          })
+          .catch(error => {
+            notification('Error Reset Password', '', 'bottom-left');
+          });
+        } else {
+          return false;
+        }
+      });
     },
     cancel() {
       this.$router.push('/');

@@ -6,6 +6,7 @@
     >
         <el-menu-item index="/homepage">Home</el-menu-item>
         <el-menu-item index="/userManagement">User Management</el-menu-item>
+        <el-menu-item index="/project">Project</el-menu-item>
         <el-menu-item index="/logout" @click="logout">Logout</el-menu-item>
     </el-menu>
   </template>
