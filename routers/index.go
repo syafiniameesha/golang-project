@@ -24,6 +24,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
     {
         api.SetupUserRouter(apiGroup, db)
         api.SetupAuthRouter(apiGroup, db)
+        api.SetupProjectRouter(apiGroup, db)
     }
 
     return router

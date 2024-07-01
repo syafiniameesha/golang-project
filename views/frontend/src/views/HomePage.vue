@@ -147,6 +147,8 @@ export default {
         .then(response => {
           this.userDetails = response.data.user;
 
+          // save userID in local storage
+          localStorage.setItem('currentUserID', response.data.user.ID);
           this.error = null;
         })
         .catch(error => {

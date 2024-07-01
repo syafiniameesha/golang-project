@@ -37,8 +37,8 @@ type ForgotPasswordInput struct {
 }
 
 type ResetPasswordInput struct {
-    // Token    string `json:"token" binding:"required"`
     Password string `json:"password" binding:"required,min=6"`
+    ConfirmPassword string `json:"confirmPassword" binding:"required,min=6"`
 }
 
 func (ac *AuthController) Signup(c *gin.Context) {
@@ -133,8 +133,6 @@ func (ac *AuthController) Login(c *gin.Context) {
 
 func (ac *AuthController) ForgotPassword(c *gin.Context) {
     var input ForgotPasswordInput
-    log.Printf("current time" + time.Now().String())
-    log.Printf("current time 1" + time.Now().Add((time.Hour)).String())
     if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
@@ -175,7 +173,7 @@ func (ac *AuthController) ForgotPassword(c *gin.Context) {
         return
     }
 
-    c.JSON(http.StatusOK, gin.H{"message": "Password reset instructions sent to your email"})
+    c.JSON(http.StatusOK, gin.H{"message": "Password reset instructions sent to your email", "email": user.Email})
 }
 
 func (ac *AuthController) ResetPassword(c *gin.Context) {
@@ -189,10 +187,16 @@ func (ac *AuthController) ResetPassword(c *gin.Context) {
         return
     }
 
-    // Bind JSON input (if any other data is needed)
+    // Bind JSON input
     var input ResetPasswordInput
     if err := c.ShouldBindJSON(&input); err != nil {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Check if passwords match
+    if input.Password != input.ConfirmPassword {
+        c.JSON(http.StatusBadRequest, gin.H{"error": "Passwords do not match"})
         return
     }
 

@@ -22,6 +22,19 @@ const routes = [
     name: 'Reset Password',
     component:() => import('/src/views/ResetPassword.vue'),
   },
+  {
+    path: '/project',
+    name: 'Project',
+    component:() => import('/src/views/Project/Project.vue'),
+    children: [
+      {
+        path: 'form',
+        component: () => import('/src/views/Project/Form.vue'),
+        name: 'ProjectForm',
+        props: true,
+      },
+    ]
+  },
 ];
 
 const router = createRouter({

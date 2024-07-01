@@ -23,7 +23,7 @@ func main() {
 
     // Auto-migrate models
     // add more models
-    if err := database.AutoMigrate(db, &models.User{}); err != nil {
+    if err := database.AutoMigrate(db, &models.User{},  &models.Project{}, &models.Status{}, &models.Type{}); err != nil {
         log.Fatalf("Error migrating database: %v", err)
     }
 
