@@ -87,7 +87,7 @@ func VerifyPasswordResetToken(tokenString string) (*jwt.Token, error) {
 // SendEmail sends an email to the specified domain
 func SendEmail(to string, subject string, body string) error {
     from := "etesting053@gmail.com"
-    password := "ruyonsnglowjqmpp" //use app password instead of login password
+    password := "" //use app password instead of login password
 
     // Setup SMTP server
     smtpHost := "smtp.gmail.com"
